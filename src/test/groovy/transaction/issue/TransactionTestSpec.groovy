@@ -1,6 +1,7 @@
 package transaction.issue
 
-import io.micronaut.test.annotation.MicronautTest
+import io.micronaut.test.extensions.spock.annotation.MicronautTest
+
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Specification
@@ -9,14 +10,14 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.sql.DataSource
 
-@MicronautTest(environments = "integration")
+@MicronautTest(transactional = false)
 class TransactionTestSpec extends Specification{
     Logger log = LoggerFactory.getLogger(TransactionTestSpec.class)
 
     @Inject
     DataSource defaultDatasource
-    @Inject @Named("event-publisher")
-    DataSource eventingDatasource
+//    @Inject @Named("event-publisher")
+//    DataSource eventingDatasource
 
     def setup(){
         log.info("setup ***********************")
