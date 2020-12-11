@@ -1,0 +1,77 @@
+<configuration debug="true">
+    <property scope="system" name="defaultMaxFileSize" value="250MB"/>
+    <property scope="system" name="defaultTotalSizeCap" value="1GB"/>
+    <property scope="system" name="defaultMaxHistory" value="72"/>
+    <property scope="system" name="timestamp" value="%d{yyyy-MM-dd_HH}.%i"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%cyan(%d{HH:mm:ss.SSS}) %gray([%thread]) %highlight(%-5level) %magenta(%logger{36}) - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="PRICE_EVENT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <arguments/>
+                <loggerName/>
+                <logLevel/>
+                <stackTrace>
+                    <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                        <maxDepthPerThrowable>20</maxDepthPerThrowable>
+                        <maxLength>5000</maxLength>
+                        <rootCauseFirst>false</rootCauseFirst>
+                        <inlineHash>true</inlineHash>
+                        <exclusions>rx\.internal</exclusions>
+                    </throwableConverter>
+                </stackTrace>
+                <message/>
+                <threadName/>
+            </providers>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_LOCATION}/price_eventing.${timestamp}.log</fileNamePattern>
+            <maxFileSize>${defaultMaxFileSize}</maxFileSize>
+            <maxHistory>${defaultMaxHistory}</maxHistory>
+            <totalSizeCap>${defaultTotalSizeCap}</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="ASYNC_STDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <maxFlushTime>5000</maxFlushTime>
+        <appender-ref ref="STDOUT"/>
+    </appender>
+
+    <appender name="ASYNC_PRICE_EVENT_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <maxFlushTime>5000</maxFlushTime>
+        <appender-ref ref="PRICE_EVENT_FILE"/>
+    </appender>
+
+    <logger name="io.micronaut" level="info" additivity="false">
+        <appender-ref ref="ASYNC_PRICE_EVENT_FILE"/>
+        <appender-ref ref="ASYNC_STDOUT"/>
+    </logger>
+
+    <logger name="HTTP_ACCESS_LOGGER" level="info" additivity="false">
+        <appender-ref ref="ASYNC_PRICE_EVENT_FILE"/>
+        <appender-ref ref="ASYNC_STDOUT"/>
+    </logger>
+
+    <root level="info">
+        <appender-ref ref="ASYNC_PRICE_EVENT_FILE"/>
+        <appender-ref ref="ASYNC_STDOUT"/>
+    </root>
+
+    <logger name="transaction.issue" level="debug" />
+
+    <!-- Enable logs below for debugging -->
+
+    <logger name="io.micronaut.transaction" level="debug" />
+    <logger name="io.micronaut.data" level="debug" />
+<!--    <logger name="io.micronaut.context.condition" level="trace" />-->
+</configuration>

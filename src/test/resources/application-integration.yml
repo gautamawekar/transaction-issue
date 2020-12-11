@@ -1,0 +1,15 @@
+datasources:
+  default:
+    readOnly: false
+    #    auto-commit: false
+    url: "jdbc:sqlite:file::memory:?foreign_keys=true"
+    driverClassName: org.sqlite.JDBC
+  event-publisher:
+    url: "jdbc:sqlite:file::memory:?foreign_keys=true"
+    driverClassName: org.sqlite.JDBC
+
+flyway:
+  datasources:
+    event-publisher:
+      enabled: true
+
