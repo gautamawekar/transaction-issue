@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.sql.DataSource
 
-@MicronautTest(environments = "integration", transactional = false)
+@MicronautTest(environments = "integration")
 class TransactionTestSpec extends Specification{
     Logger log = LoggerFactory.getLogger(TransactionTestSpec.class)
 
